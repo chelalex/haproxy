@@ -19,7 +19,7 @@ openssl
 ## Role Variables
 
 **haproxy:**<br>
-    **ssl_path:** *path to ssl certs*<br>
+&nbsp; **ssl_path:** *path to ssl certs*<br>
 &nbsp; **key:** *keyfile name*<br>
 &nbsp; **cert:** *certfile name*<br>
 &nbsp; **ssl_file:** *total file (key + cert)*<br>
