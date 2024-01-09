@@ -1,80 +1,80 @@
 ---
 # vars file for haproxy
 haproxy:
-  ssl_path: /etc/ssl/private/ #путь к ssl сертификатам
-  key: haproxy.key #название ключа
-  cert: haproxy.crt #название сертификата
-  ssl_file: haproxy.pem #файл ключ + сертификат (см HAproxy | Unify cert and key files)
-  config_path: /etc/haproxy/ #путь к конфиг файлу
-  config_file: haproxy.cfg #навзание конфиг файла
-config_params: #параметры конфига
-  - section: global #секция глобальных параметров
+  ssl_path: /etc/ssl/private/
+  key: haproxy.key
+  cert: haproxy.crt
+  ssl_file: haproxy.pem
+  config_path: /etc/haproxy/
+  config_file: haproxy.cfg
+config_params:
+  - section: global
     section_name: ""
     options:
-      - name: log #по умолчанию
+      - name: log
         value: "/dev/log    local0"
-      - name: log #по умолчанию
+      - name: log
         value: "/dev/log    local1 notice"
-      - name: chroot #по умолчанию
+      - name: chroot
         value: "/var/lib/haproxy"
-      - name: stats #по умолчанию
+      - name: stats
         value: "timeout 30s"
-      - name: user #по умолчанию
+      - name: user
         value: "haproxy"
-      - name: group #по умолчанию
+      - name: group
         value: "haproxy"
-      - name: daemon #по умолчанию
+      - name: daemon
         value: ""
-  - section: defaults #секция параметров по умолчанию для прокси
+  - section: defaults
     section_name: ""
     options:
-      - name: log #по умолчанию
+      - name: log
         value: "global"
-      - name: mode #по умолчанию
+      - name: mode
         value: "http"
-      - name: option #по умолчанию
+      - name: option
         value: "httplog"
-      - name: option #по умолчанию
+      - name: option
         value: "dontlognull"
-      - name: timeout #по умолчанию
+      - name: timeout
         value: "connect 5000"
-      - name: timeout #по умолчанию
+      - name: timeout
         value: "client  50000"
-      - name: timeout #по умолчанию
+      - name: timeout
         value: "server  50000"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "400 /etc/haproxy/errors/400.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "403 /etc/haproxy/errors/403.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "408 /etc/haproxy/errors/408.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "500 /etc/haproxy/errors/500.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "502 /etc/haproxy/errors/502.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "503 /etc/haproxy/errors/503.http"
-      - name: errorfile #по умолчанию
+      - name: errorfile
         value: "504 /etc/haproxy/errors/504.http"
-  - section: frontend #секция параметров фронтенда для прокси
+  - section: frontend
     section_name: "front_ssl"
     options:
-      - name: bind #из ручного гайда
-        value: "{{ ansible_host }}:443 ssl crt {{ haproxy.ssl_path }}{{ haproxy.ssl_file }}" #ansible_host - адрес текущего хоста, на которой производится настройка
-      - name: mode #из ручного гайда
+      - name: bind
+        value: "{{ ansible_host }}:443 ssl crt {{ haproxy.ssl_path }}{{ haproxy.ssl_file }}"
+      - name: mode
         value: "http"
-      - name: http-request #из ручного гайда
+      - name: http-request
         value: "set-header X-Forwarded-For %[src]"
-      - name: http-request #из ручного гайда
+      - name: http-request
         value: "add-header X-Forwarded-Proto https"
-      - name: option #из ручного гайда
+      - name: option
         value: "http-server-close"
-      - name: default_backend #из ручного гайда
+      - name: default_backend
         value: "back_ssl"
-  - section: backend #секция параметров бэкенда для прокси
+  - section: backend
     section_name: "back_ssl"
     options:
-      - name: mode #из ручного гайда
+      - name: mode
         value: "http"
-      - name: server #из ручного гайда
-        value: "web1 {{ hostvars['webserver'].ansible_host }}:80 check" #hostvars['webserver'].ansible_host - адрес хоста с названием webserver (это прописано в инвентаре, это то, где веб-сервис)
+      - name: server
+        value: "web1 {{ hostvars['webserver'].ansible_host }}:80 check"
