@@ -1,0 +1,52 @@
+---
+# tasks file for haproxy
+
+- name: HAproxy | Install HAproxy packets
+  ansible.builtin.apt:
+    pkg: haproxy
+    state: present
+    update_cache: true
+  become: true
+
+- name: HAproxy | Generate openssl certificate
+  ansible.builtin.shell: 'openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out {{ haproxy.cert }} -keyout {{ haproxy.key }} -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN={{ ansible_host }}"'
+  args:
+    chdir: "{{ haproxy.ssl_path }}"
+    creates: "{{ haproxy.ssl_path }}{{ haproxy.cert }}"
+  become: true
+
+- name: HAproxy | Unify cert and key files
+  ansible.builtin.shell: "su - root /bin/bash -c 'cat {{ haproxy.ssl_path }}{{ haproxy.key }} {{ haproxy.ssl_path }}{{ haproxy.cert }} > {{ haproxy.ssl_path }}{{ haproxy.ssl_file }}'"
+  args:
+    creates: "{{ haproxy.ssl_path }}{{ haproxy.ssl_file }}"
+  become: true
+  become_method: sudo
+
+- name: HAproxy | Create HAproxy config
+  ansible.builtin.template:
+    src: "{{ haproxy.config_file }}.j2"
+    dest: "{{ haproxy.config_path }}{{ haproxy.config_file }}"
+    owner: root
+    mode: 0644
+  become: true
+
+- name: HAproxy | Check config file
+  ansible.builtin.shell: "haproxy -c -f {{ haproxy.config_file }}"
+  args:
+    chdir: "{{ haproxy.config_path }}"
+  no_log: true
+  ignore_errors: true
+  register: config_result
+  become: true
+
+- name: HAproxy | Start HAproxy service
+  ansible.builtin.systemd:
+    name: haproxy.service
+    state: restarted
+  when: config_result.rc == 0
+  become: true
+
+- name: HAproxy | Debug config errors
+  ansible.builtin.debug:
+    var: config_result.stdout
+  when: config_result.rc == 1

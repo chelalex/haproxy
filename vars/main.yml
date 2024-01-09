@@ -1,0 +1,80 @@
+---
+# vars file for haproxy
+haproxy:
+  ssl_path: /etc/ssl/private/ #путь к ssl сертификатам
+  key: haproxy.key #название ключа
+  cert: haproxy.crt #название сертификата
+  ssl_file: haproxy.pem #файл ключ + сертификат (см HAproxy | Unify cert and key files)
+  config_path: /etc/haproxy/ #путь к конфиг файлу
+  config_file: haproxy.cfg #навзание конфиг файла
+config_params: #параметры конфига
+  - section: global #секция глобальных параметров
+    section_name: ""
+    options:
+      - name: log #по умолчанию
+        value: "/dev/log    local0"
+      - name: log #по умолчанию
+        value: "/dev/log    local1 notice"
+      - name: chroot #по умолчанию
+        value: "/var/lib/haproxy"
+      - name: stats #по умолчанию
+        value: "timeout 30s"
+      - name: user #по умолчанию
+        value: "haproxy"
+      - name: group #по умолчанию
+        value: "haproxy"
+      - name: daemon #по умолчанию
+        value: ""
+  - section: defaults #секция параметров по умолчанию для прокси
+    section_name: ""
+    options:
+      - name: log #по умолчанию
+        value: "global"
+      - name: mode #по умолчанию
+        value: "http"
+      - name: option #по умолчанию
+        value: "httplog"
+      - name: option #по умолчанию
+        value: "dontlognull"
+      - name: timeout #по умолчанию
+        value: "connect 5000"
+      - name: timeout #по умолчанию
+        value: "client  50000"
+      - name: timeout #по умолчанию
+        value: "server  50000"
+      - name: errorfile #по умолчанию
+        value: "400 /etc/haproxy/errors/400.http"
+      - name: errorfile #по умолчанию
+        value: "403 /etc/haproxy/errors/403.http"
+      - name: errorfile #по умолчанию
+        value: "408 /etc/haproxy/errors/408.http"
+      - name: errorfile #по умолчанию
+        value: "500 /etc/haproxy/errors/500.http"
+      - name: errorfile #по умолчанию
+        value: "502 /etc/haproxy/errors/502.http"
+      - name: errorfile #по умолчанию
+        value: "503 /etc/haproxy/errors/503.http"
+      - name: errorfile #по умолчанию
+        value: "504 /etc/haproxy/errors/504.http"
+  - section: frontend #секция параметров фронтенда для прокси
+    section_name: "front_ssl"
+    options:
+      - name: bind #из ручного гайда
+        value: "{{ ansible_host }}:443 ssl crt {{ haproxy.ssl_path }}{{ haproxy.ssl_file }}" #ansible_host - адрес текущего хоста, на которой производится настройка
+      - name: mode #из ручного гайда
+        value: "http"
+      - name: http-request #из ручного гайда
+        value: "set-header X-Forwarded-For %[src]"
+      - name: http-request #из ручного гайда
+        value: "add-header X-Forwarded-Proto https"
+      - name: option #из ручного гайда
+        value: "http-server-close"
+      - name: default_backend #из ручного гайда
+        value: "back_ssl"
+  - section: backend #секция параметров бэкенда для прокси
+    section_name: "back_ssl"
+    options:
+      - name: mode #из ручного гайда
+        value: "http"
+      - name: server #из ручного гайда
+        value: "web1 {{ hostvars['webserver'].ansible_host }}:80 check" #hostvars['webserver'].ansible_host - адрес хоста с названием webserver (это прописано в инвентаре, это то, где веб-сервис)

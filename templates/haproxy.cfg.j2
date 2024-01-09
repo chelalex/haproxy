@@ -1,0 +1,6 @@
+{% for param in config_params %}
+{{ param.section }} {{ param.section_name }}
+{% for option in param.options %}
+        {{ option.name }}       {{ option.value }}
+{% endfor %}
+{% endfor %}
