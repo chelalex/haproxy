@@ -1,8 +1,7 @@
-haproxy
-=========
+# haproxy
 
-Install and configure HAproxy ansible role<br>
-Available for Ubuntu 22.04 LTS<br>
+Install and configure HAproxy ansible role
+Available for Ubuntu 22.04 LTS
 
     haproxy
     ├── README.md
@@ -13,13 +12,11 @@ Available for Ubuntu 22.04 LTS<br>
     └── vars
         └── main.yml
 
-Requirements
-------------
+## Requirements
 
 openssl
 
-Role Variables
---------------
+## Role Variables
 
 haproxy:<br>
   ssl_path: *path to ssl certs*<br>
@@ -29,17 +26,16 @@ haproxy:<br>
   config_path: *path to config file*<br>
   config_file: *config file name*<br>
 config_params: *config parameters*<br>
-  - section: *parameters section*<br>
+  \- section: *parameters section*<br>
     section_name: *given section name*<br>
     options: *options array*<br>
-      - name: *option name*<br>
+      \- name: *option name*<br>
         value: *option value*<br>
         ...<br>
     ...<br>
     *(all options are described in HAproxy documentation)*<br>
 
-Example Playbook
-----------------
+## Example Playbook
 
     - hosts: proxy_server
       roles:
