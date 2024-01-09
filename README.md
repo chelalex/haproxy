@@ -20,20 +20,20 @@ openssl
 
 haproxy:<br>
 &nbsp; ssl_path: *path to ssl certs*<br>
-  key: *keyfile name*<br>
-  cert: *certfile name*<br>
-  ssl_file: *total file (key + cert)*<br>
-  config_path: *path to config file*<br>
-  config_file: *config file name*<br>
+&nbsp; key: *keyfile name*<br>
+&nbsp; cert: *certfile name*<br>
+&nbsp; ssl_file: *total file (key + cert)*<br>
+&nbsp; config_path: *path to config file*<br>
+&nbsp; config_file: *config file name*<br>
 config_params: *config parameters*<br>
-  \- section: *parameters section*<br>
-    section_name: *given section name*<br>
-    options: *options array*<br>
-      \- name: *option name*<br>
-        value: *option value*<br>
-        ...<br>
-    ...<br>
-    *(all options are described in HAproxy documentation)*<br>
+&nbsp; \- section: *parameters section*<br>
+&nbsp; section_name: *given section name*<br>
+&nbsp; options: *options array*<br>
+&nbsp; &nbsp; \- name: *option name*<br>
+&nbsp; &nbsp; &nbsp; value: *option value*<br>
+&nbsp; &nbsp; ...<br>
+&nbsp; ...<br>
+&nbsp; *(all options are described in HAproxy documentation)*<br>
 
 ## Example Playbook
 
